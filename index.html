@@ -1,160 +1,122 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>دولابي - عرض الملابس</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دولابي</title>
+<style>
+body { font-family: Arial; background: #fff68f; margin:0; padding:0; text-align:center; }
+h1 { color: red; margin: 20px 0; animation: slideIn 1s ease; }
+@keyframes slideIn { from {transform: translateX(-100%);} to {transform: translateX(0);} }
+#address { font-size: 14px; margin-bottom: 10px; }
+#contact { font-size: 16px; margin-bottom: 20px; font-weight:bold; }
+.product { display:inline-block; margin:10px; padding:10px; border:1px solid #ccc; border-radius:10px; width:150px; transition: transform 0.3s; }
+.product:hover { transform: scale(1.1); }
+.product img { width:100%; border-radius:10px; animation: zoomIn 0.5s ease; }
+@keyframes zoomIn { from {transform: scale(0);} to {transform: scale(1);} }
+#adminPanel { display:none; margin:20px; padding:20px; border:2px dashed #f00; }
+input, button { padding:5px; margin:5px; }
+#adminBtn { margin:20px; padding:10px 20px; background:red; color:white; border:none; cursor:pointer; border-radius:5px; }
+</style>
 </head>
 <body>
 
-<!-- --------------------- الهيدر --------------------- -->
-<header id="header">
-  <img src="logo.png" alt="Logo">
-  <h1>دولابي</h1>
-  <p>ديرب نجم بجوار كافييه المشربيه | 01116535376</p>
-</header>
+<h1>دولابي</h1>
+<div id="address">ديرب نجم بجوار كافيه المشربيه</div>
+<div id="contact">للاستعلام: 01116535376</div>
 
-<!-- --------------------- المنتجات --------------------- -->
-<div class="products" id="products">
+<div id="products"></div>
 
-  <!-- منتجات جاهزة 10 صور -->
-  <div class="card" data-id="1">
-    <img src="images/shirt1.jpg" alt="منتج 1">
-    <h3>تيشيرت أسود</h3>
-    <p class="price">120 جنيه</p>
-  </div>
+<button id="adminBtn" onclick="toggleAdmin()">Admin</button>
 
-  <div class="card" data-id="2">
-    <img src="images/shirt2.jpg" alt="منتج 2">
-    <h3>قميص أبيض</h3>
-    <p class="price">150 جنيه</p>
-  </div>
-
-  <div class="card" data-id="3">
-    <img src="images/shirt3.jpg" alt="منتج 3">
-    <h3>بنطلون جينز</h3>
-    <p class="price">200 جنيه</p>
-  </div>
-
-  <div class="card" data-id="4">
-    <img src="images/shirt4.jpg" alt="منتج 4">
-    <h3>جاكيت أسود</h3>
-    <p class="price">300 جنيه</p>
-  </div>
-
-  <div class="card" data-id="5">
-    <img src="images/shirt5.jpg" alt="منتج 5">
-    <h3>تيشيرت أحمر</h3>
-    <p class="price">130 جنيه</p>
-  </div>
-
-  <div class="card" data-id="6">
-    <img src="images/shirt6.jpg" alt="منتج 6">
-    <h3>قميص كحلي</h3>
-    <p class="price">160 جنيه</p>
-  </div>
-
-  <div class="card" data-id="7">
-    <img src="images/shirt7.jpg" alt="منتج 7">
-    <h3>بنطلون أسود</h3>
-    <p class="price">210 جنيه</p>
-  </div>
-
-  <div class="card" data-id="8">
-    <img src="images/shirt8.jpg" alt="منتج 8">
-    <h3>جاكيت رمادي</h3>
-    <p class="price">320 جنيه</p>
-  </div>
-
-  <div class="card" data-id="9">
-    <img src="images/shirt9.jpg" alt="منتج 9">
-    <h3>تيشيرت أزرق</h3>
-    <p class="price">140 جنيه</p>
-  </div>
-
-  <div class="card" data-id="10">
-    <img src="images/shirt10.jpg" alt="منتج 10">
-    <h3>قميص أخضر</h3>
-    <p class="price">170 جنيه</p>
-  </div>
-
-</div>
-
-<!-- --------------------- لوحة التحكم Admin --------------------- -->
 <div id="adminPanel">
-  <h3>لوحة التحكم</h3>
-  <input type="password" id="adminPassword" placeholder="أدخل الباسورد">
-  <button id="loginBtn">دخول</button>
-
-  <hr>
-
-  <input type="file" id="imageInput">
-  <input type="text" id="productName" placeholder="اسم المنتج">
-  <input type="text" id="productPrice" placeholder="السعر">
-  <button id="addProductBtn">أضف المنتج</button>
+  <h2>لوحة الإدارة</h2>
+  <input type="text" id="name" placeholder="اسم المنتج">
+  <input type="file" id="imgFile" accept="image/*">
+  <input type="text" id="price" placeholder="السعر">
+  <button onclick="addProduct()">إضافة</button>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
 <script>
-  // --------------------- Admin مخفي ---------------------
-  const header = document.getElementById('header');
-  const adminPanel = document.getElementById('adminPanel');
-  let clickCount = 0;
+// ====== Firebase config ======
+const firebaseConfig = {
+  apiKey: "AIzaSyChb7U4jURTdSv_Nb9D7jgwRzcRYhKb91w",
+  authDomain: "ddoollaabbii.firebaseapp.com",
+  projectId: "ddoollaabbii",
+  storageBucket: "ddoollaabbii.firebasestorage.app",
+  messagingSenderId: "635784319526",
+  appId: "1:635784319526:web:e4eef00e3a718fc2be4ce7"
+};
 
-  header.addEventListener('click', () => {
-    clickCount++;
-    if(clickCount === 5) {
-      adminPanel.style.display = 'block';
-      clickCount = 0;
-    }
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+// ====== Render products Realtime ======
+db.collection('products').onSnapshot((snapshot) => {
+  const container = document.getElementById('products');
+  container.innerHTML = '';
+  snapshot.forEach(doc => {
+    const p = doc.data();
+    const div = document.createElement('div');
+    div.className = 'product';
+    div.innerHTML = `
+      <img src="${p.img}" alt="${p.name}">
+      <p>${p.name}</p>
+      <p>السعر: ${p.price}</p>
+      <button onclick="deleteProduct('${doc.id}')">حذف</button>
+    `;
+    container.appendChild(div);
   });
+});
 
-  const loginBtn = document.getElementById('loginBtn');
-  loginBtn.addEventListener('click', () => {
-    const password = document.getElementById('adminPassword').value;
-    if(password === 'A1234A') {
-      alert('تم تسجيل الدخول كـ Admin');
-    } else {
-      alert('الباسورد خطأ');
-      adminPanel.style.display = 'none';
+// ====== Admin panel ======
+function toggleAdmin() {
+  const pass = prompt("ادخل كلمة السر للادمن:");
+  if(pass === "dolabi123") {
+    const panel = document.getElementById('adminPanel');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  } else {
+    alert("كلمة السر غلط!");
+  }
+}
+
+// ====== Add product مع رفع الصورة من الجهاز ======
+function addProduct() {
+  const name = document.getElementById('name').value;
+  const file = document.getElementById('imgFile').files[0];
+  const price = document.getElementById('price').value;
+
+  if(!name || !file || !price) return alert("املأ كل الحقول واختر صورة");
+
+  const storageRef = storage.ref('products/' + Date.now() + '_' + file.name);
+  const uploadTask = storageRef.put(file);
+
+  uploadTask.on('state_changed', 
+    null,
+    (error) => { alert("حدث خطأ أثناء رفع الصورة: " + error); },
+    () => {
+      uploadTask.snapshot.ref.getDownloadURL().then((url) => {
+        db.collection('products').add({ name, img: url, price }).then(() => {
+          confetti({ particleCount: 100, spread: 70 });
+          document.getElementById('name').value='';
+          document.getElementById('imgFile').value='';
+          document.getElementById('price').value='';
+        });
+      });
     }
-  });
+  );
+}
 
-  // --------------------- إضافة منتج جديد ---------------------
-  const addProductBtn = document.getElementById('addProductBtn');
-  addProductBtn.addEventListener('click', () => {
-    const imageInput = document.getElementById('imageInput');
-    const nameInput = document.getElementById('productName').value;
-    const priceInput = document.getElementById('productPrice').value;
-
-    if(imageInput.files.length === 0) {
-      alert('اختر صورة للمنتج');
-      return;
-    }
-    if(!nameInput || !priceInput) {
-      alert('اكتب اسم وسعر المنتج');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const products = document.getElementById('products');
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        <img src="${e.target.result}" alt="${nameInput}">
-        <h3>${nameInput}</h3>
-        <p class="price">${priceInput}</p>
-      `;
-      products.appendChild(card);
-    }
-    reader.readAsDataURL(imageInput.files[0]);
-
-    // مسح الحقول بعد الإضافة
-    document.getElementById('productName').value = '';
-    document.getElementById('productPrice').value = '';
-    imageInput.value = '';
-  });
+// ====== Delete product ======
+function deleteProduct(id) {
+  db.collection('products').doc(id).delete();
+}
 </script>
 
 </body>
