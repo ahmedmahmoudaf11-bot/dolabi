@@ -2,104 +2,159 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>دولابي</title>
-  <style>
-    body { font-family: Arial; margin:0; background: #fff200; }
-    header { background: #fff200; color: black; padding: 20px; text-align: center; }
-    header img { width: 80px; vertical-align: middle; }
-    header h1 { display: inline-block; margin: 0 0 0 10px; font-size: 36px; color: black; vertical-align: middle; }
-    .products { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px; padding:20px; }
-    .card { background:#fff; padding:10px; border-radius:8px; text-align:center; }
-    .card img { width:100%; border-radius:8px; }
-    .price { color:green; font-weight:bold; }
-    footer { text-align:center; padding:15px; background:#fff200; margin-top:20px; }
-    /* لوحة التحكم */
-    #adminPanel { display:none; position:fixed; top:10%; left:50%; transform:translateX(-50%); background:#fff; padding:20px; border-radius:10px; box-shadow:0 0 10px #000; z-index:999; width:300px; }
-    #adminPanel input { width:100%; margin-bottom:10px; padding:5px; }
-    #adminPanel button { padding:5px 10px; cursor:pointer; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>دولابي - عرض الملابس</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
-  <img src="images/logo.png" alt="دولابي لوجو">
+<!-- --------------------- الهيدر --------------------- -->
+<header id="header">
+  <img src="logo.png" alt="Logo">
   <h1>دولابي</h1>
-  <p>ديرب نجم بجوار كافيه المشربية | للاستعلام: 01116535376</p>
+  <p>ديرب نجم بجوار كافييه المشربيه | 01116535376</p>
 </header>
 
+<!-- --------------------- المنتجات --------------------- -->
 <div class="products" id="products">
-  <!-- مثال منتج -->
-  <div class="card" data-id="0">
-    <img src="images/shirt1.jpg" alt="تيشيرت رجالي" id="img0">
-    <h3 id="name0">تيشيرت أسود</h3>
-    <p class="price" id="price0">250 جنيه</p>
-  </div>
+
+  <!-- منتجات جاهزة 10 صور -->
   <div class="card" data-id="1">
-    <img src="images/shirt2.jpg" alt="قميص أبيض" id="img1">
-    <h3 id="name1">قميص أبيض</h3>
-    <p class="price" id="price1">300 جنيه</p>
+    <img src="images/shirt1.jpg" alt="منتج 1">
+    <h3>تيشيرت أسود</h3>
+    <p class="price">120 جنيه</p>
   </div>
+
   <div class="card" data-id="2">
-    <img src="images/shirt3.jpg" alt="بنطلون جينز" id="img2">
-    <h3 id="name2">بنطلون جينز</h3>
-    <p class="price" id="price2">400 جنيه</p>
+    <img src="images/shirt2.jpg" alt="منتج 2">
+    <h3>قميص أبيض</h3>
+    <p class="price">150 جنيه</p>
   </div>
+
+  <div class="card" data-id="3">
+    <img src="images/shirt3.jpg" alt="منتج 3">
+    <h3>بنطلون جينز</h3>
+    <p class="price">200 جنيه</p>
+  </div>
+
+  <div class="card" data-id="4">
+    <img src="images/shirt4.jpg" alt="منتج 4">
+    <h3>جاكيت أسود</h3>
+    <p class="price">300 جنيه</p>
+  </div>
+
+  <div class="card" data-id="5">
+    <img src="images/shirt5.jpg" alt="منتج 5">
+    <h3>تيشيرت أحمر</h3>
+    <p class="price">130 جنيه</p>
+  </div>
+
+  <div class="card" data-id="6">
+    <img src="images/shirt6.jpg" alt="منتج 6">
+    <h3>قميص كحلي</h3>
+    <p class="price">160 جنيه</p>
+  </div>
+
+  <div class="card" data-id="7">
+    <img src="images/shirt7.jpg" alt="منتج 7">
+    <h3>بنطلون أسود</h3>
+    <p class="price">210 جنيه</p>
+  </div>
+
+  <div class="card" data-id="8">
+    <img src="images/shirt8.jpg" alt="منتج 8">
+    <h3>جاكيت رمادي</h3>
+    <p class="price">320 جنيه</p>
+  </div>
+
+  <div class="card" data-id="9">
+    <img src="images/shirt9.jpg" alt="منتج 9">
+    <h3>تيشيرت أزرق</h3>
+    <p class="price">140 جنيه</p>
+  </div>
+
+  <div class="card" data-id="10">
+    <img src="images/shirt10.jpg" alt="منتج 10">
+    <h3>قميص أخضر</h3>
+    <p class="price">170 جنيه</p>
+  </div>
+
 </div>
 
-<footer>
-  © 2026 دولابي
-</footer>
-
-<!-- لوحة التحكم -->
+<!-- --------------------- لوحة التحكم Admin --------------------- -->
 <div id="adminPanel">
-  <h3>لوحة تحكم Admin</h3>
-  <label>رقم المنتج (0-2):</label>
-  <input type="number" id="prodId" min="0" max="2" placeholder="رقم المنتج">
-  <label>اسم المنتج الجديد:</label>
-  <input type="text" id="newName" placeholder="اسم جديد">
-  <label>السعر الجديد:</label>
-  <input type="text" id="newPrice" placeholder="السعر الجديد">
-  <label>رابط الصورة الجديد (URL):</label>
-  <input type="text" id="newImg" placeholder="رابط الصورة">
-  <button onclick="updateProduct()">تحديث المنتج</button>
-  <button onclick="closeAdmin()">اغلاق</button>
+  <h3>لوحة التحكم</h3>
+  <input type="password" id="adminPassword" placeholder="أدخل الباسورد">
+  <button id="loginBtn">دخول</button>
+
+  <hr>
+
+  <input type="file" id="imageInput">
+  <input type="text" id="productName" placeholder="اسم المنتج">
+  <input type="text" id="productPrice" placeholder="السعر">
+  <button id="addProductBtn">أضف المنتج</button>
 </div>
 
 <script>
-  // زر Admin مخفي (اضغط 5 مرات على الهيدر)
+  // --------------------- Admin مخفي ---------------------
+  const header = document.getElementById('header');
+  const adminPanel = document.getElementById('adminPanel');
   let clickCount = 0;
-  document.querySelector('header').addEventListener('click', function(){
+
+  header.addEventListener('click', () => {
     clickCount++;
-    if(clickCount === 5){
-      let password = prompt("ادخل الباسورد:");
-      if(password === "A1234A"){
-        document.getElementById('adminPanel').style.display = 'block';
-      } else {
-        alert("كلمة مرور خطأ!");
-      }
+    if(clickCount === 5) {
+      adminPanel.style.display = 'block';
       clickCount = 0;
     }
   });
 
-  function updateProduct(){
-    let id = document.getElementById('prodId').value;
-    let name = document.getElementById('newName').value;
-    let price = document.getElementById('newPrice').value;
-    let img = document.getElementById('newImg').value;
-
-    if(id !== "" && id>=0 && id<=2){
-      if(name) document.getElementById('name'+id).innerText = name;
-      if(price) document.getElementById('price'+id).innerText = price;
-      if(img) document.getElementById('img'+id).src = img;
-      alert("تم التحديث!");
+  const loginBtn = document.getElementById('loginBtn');
+  loginBtn.addEventListener('click', () => {
+    const password = document.getElementById('adminPassword').value;
+    if(password === 'A1234A') {
+      alert('تم تسجيل الدخول كـ Admin');
     } else {
-      alert("رقم المنتج غير صحيح!");
+      alert('الباسورد خطأ');
+      adminPanel.style.display = 'none';
     }
-  }
+  });
 
-  function closeAdmin(){
-    document.getElementById('adminPanel').style.display = 'none';
-  }
+  // --------------------- إضافة منتج جديد ---------------------
+  const addProductBtn = document.getElementById('addProductBtn');
+  addProductBtn.addEventListener('click', () => {
+    const imageInput = document.getElementById('imageInput');
+    const nameInput = document.getElementById('productName').value;
+    const priceInput = document.getElementById('productPrice').value;
+
+    if(imageInput.files.length === 0) {
+      alert('اختر صورة للمنتج');
+      return;
+    }
+    if(!nameInput || !priceInput) {
+      alert('اكتب اسم وسعر المنتج');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const products = document.getElementById('products');
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <img src="${e.target.result}" alt="${nameInput}">
+        <h3>${nameInput}</h3>
+        <p class="price">${priceInput}</p>
+      `;
+      products.appendChild(card);
+    }
+    reader.readAsDataURL(imageInput.files[0]);
+
+    // مسح الحقول بعد الإضافة
+    document.getElementById('productName').value = '';
+    document.getElementById('productPrice').value = '';
+    imageInput.value = '';
+  });
 </script>
 
 </body>
