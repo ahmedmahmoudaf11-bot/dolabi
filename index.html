@@ -1,166 +1,208 @@
-<!DOCTYPE html>
-<html lang="ar">
+<!DOCTYPE html><html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>دولابي</title>
-<style>
-body { font-family: Arial; margin:0; background:#fff200; text-align:center; color:black; }
-h1 { font-size:36px; margin:20px 0; animation: slideIn 1s ease; }
-@keyframes slideIn { from {transform: translateX(-100%);} to {transform: translateX(0);} }
-#address, #contact { font-size:14px; margin:5px 0; }
-.products { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px; padding:20px; }
-.card { background:#fff; padding:10px; border-radius:8px; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.2); }
-.card img { width:100%; border-radius:8px; animation: zoomIn 0.5s ease; }
-@keyframes zoomIn { from {transform: scale(0);} to {transform: scale(1);} }
-.price { color:green; font-weight:bold; margin:5px 0 0 0; }
-footer { text-align:center; padding:15px; background:#fff200; margin-top:20px; }
-#adminPanel { display:none; position:fixed; top:10%; left:50%; transform:translateX(-50%); background:#fff; padding:20px; border-radius:10px; box-shadow:0 0 10px #000; z-index:999; width:300px; }
-#adminPanel h3 { margin-top:0; }
-#adminPanel input, #adminPanel select { width:100%; margin-bottom:10px; padding:5px; }
-#adminPanel button { padding:5px 10px; cursor:pointer; margin-right:5px; margin-top:5px; }
-#adminBtn { margin:20px; padding:10px 20px; background:red; color:white; border:none; cursor:pointer; border-radius:5px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>دولابي | عرض منتجات</title>
+  <style>
+    body {
+      font-family: Arial, Tahoma;
+      margin: 0;
+      background: #fff200;
+      overflow-x: hidden;
+    }
+    header {
+      color: #000;
+      padding: 30px;
+      text-align: center;
+      font-size: 50px;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px #555;
+      animation: slideIn 1s ease-out;
+    }
+    @keyframes slideIn {
+      0% {transform: translateY(-50px); opacity: 0;}
+      100% {transform: translateY(0); opacity: 1;}
+    }
+    .contact {
+      text-align: center;
+      background: #fff8b0;
+      padding: 10px;
+      font-size: 14px;
+      color: #111;
+      animation: fadeIn 1s ease-in;
+    }
+    @keyframes fadeIn {
+      0% {opacity: 0;}
+      100% {opacity: 1;}
+    }
+    .container {padding: 20px; position: relative;}
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,.1);
+      transform: translateX(-100vw);
+      animation: slideInCard 0.8s forwards;
+    }
+    @keyframes slideInCard {
+      0% {transform: translateX(-100vw) rotate(-10deg); opacity: 0;}
+      100% {transform: translateX(0) rotate(0deg); opacity: 1;}
+    }
+    .card img {width: 100%; height: 250px; object-fit: cover;}
+    .price {
+      padding: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+      color: #111;
+    }
+    .admin-btn {text-align: center; margin-top: 30px; font-size: 12px;}
+    .admin-btn a {color: #111; text-decoration: none; font-weight: bold;}
+    .admin {
+      max-width: 400px;
+      margin: 40px auto;
+      background: #ffe4b5;
+      padding: 20px;
+      border-radius: 10px;
+      display: none;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #000;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: .3s;
+    }
+    button:hover {background: #333;}
+    .delete-btn {
+      width: 100%;
+      padding: 5px;
+      background: #ff4500;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      margin-top: 5px;
+      border-radius: 5px;
+      display: none;
+    }
+    .delete-btn:hover {background: #ff0000;}
+    /* Confetti */
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: #ff0;
+      top: 0;
+      animation: fall 3s linear infinite;
+      opacity: 0.7;
+      z-index: 9999;
+    }
+    @keyframes fall {
+      0% {transform: translateY(0) rotate(0deg);}
+      100% {transform: translateY(100vh) rotate(360deg);}
+    }
+  </style>
 </head>
-<body>
+<body><header>دولابي</header><div class="contact">
+  <p>العنوان: ديرب نجم بجوار كافيه المشربيه ومطعم عيسي</p>
+  <p>رقم الاستفسارات: 01116535376</p>
+</div><div class="container">
+  <div class="products" id="products"></div>
+  <div class="admin-btn">
+    <a href="#" onclick="openAdmin()">دخول الإدارة</a>
+  </div>
+</div><div class="admin" id="admin">
+  <h3>لوحة التحكم</h3>
+  <input type="password" id="code" placeholder="الكود السري">
+  <button onclick="login()">دخول</button>  <div id="panel" style="display:none">
+    <input type="file" id="img">
+    <input type="text" id="price" placeholder="السعر">
+    <button onclick="addProduct()">إضافة منتج</button>
+  </div>
+</div><script>
+  const SECRET = "A1234S";
+  let products = JSON.parse(localStorage.getItem("products")) || [];
 
-<h1>دولابي</h1>
-<div id="address">ديرب نجم بجوار كافيه المشربيه</div>
-<div id="contact">للاستعلام: 01116535376</div>
-
-<div class="products" id="products"></div>
-
-<button id="adminBtn" onclick="toggleAdmin()">Admin</button>
-
-<div id="adminPanel">
-  <h3>لوحة الإدارة</h3>
-  <input type="text" id="name" placeholder="اسم المنتج">
-  <input type="file" id="imgFile" accept="image/*">
-  <input type="text" id="price" placeholder="السعر">
-  <button onclick="addProduct()">إضافة</button>
-  <button onclick="updateProduct()">تعديل الصورة</button>
-  <button onclick="deleteProductSelected()">حذف المنتج</button>
-  <select id="productSelect"></select>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-
-<script>
-// ====== Firebase config ======
-const firebaseConfig = {
-  apiKey: "AIzaSyChb7U4jURTdSv_Nb9D7jgwRzcRYhKb91w",
-  authDomain: "ddoollaabbii.firebaseapp.com",
-  projectId: "ddoollaabbii",
-  storageBucket: "ddoollaabbii.firebasestorage.app",
-  messagingSenderId: "635784319526",
-  appId: "1:635784319526:web:e4eef00e3a718fc2be4ce7"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const storage = firebase.storage();
-
-// ====== Render products Realtime ======
-db.collection('products').onSnapshot(snapshot => {
-  const container = document.getElementById('products');
-  container.innerHTML = '';
-  snapshot.forEach(doc => {
-    const p = doc.data();
-    const div = document.createElement('div');
-    div.className = 'card';
-    div.innerHTML = `
-      <img src="${p.img}" alt="${p.name}">
-      <p>${p.name}</p>
-      <p class="price">${p.price}</p>
-    `;
-    container.appendChild(div);
-  });
-});
-
-// ====== Admin panel ======
-function toggleAdmin() {
-  const pass = prompt("ادخل كلمة السر للادمن:");
-  if(pass === "A1212A") {
-    const panel = document.getElementById('adminPanel');
-    panel.style.display = panel.style.display==='none'?'block':'none';
-    loadProductsToSelect();
-  } else alert("كلمة السر غلط!");
-}
-
-// ====== Load products to select ======
-function loadProductsToSelect() {
-  const select = document.getElementById('productSelect');
-  select.innerHTML = '';
-  db.collection('products').get().then(snapshot=>{
-    snapshot.forEach(doc=>{
-      const opt = document.createElement('option');
-      opt.value = doc.id;
-      opt.text = doc.data().name;
-      select.appendChild(opt);
+  function render() {
+    const box = document.getElementById("products");
+    box.innerHTML = "";
+    products.forEach((p, index) => {
+      box.innerHTML += `
+        <div class="card">
+          <img src="${p.img}">
+          <div class="price">${p.price} جنيه</div>
+          <button class="delete-btn" onclick="deleteProduct(${index})">حذف</button>
+        </div>`;
     });
-  });
-}
+    localStorage.setItem("products", JSON.stringify(products));
+    showDeleteButtons();
+  }
 
-// ====== Add product ======
-function addProduct() {
-  const name = document.getElementById('name').value;
-  const file = document.getElementById('imgFile').files[0];
-  const price = document.getElementById('price').value;
-  if(!name||!file||!price) return alert("املأ كل الحقول واختر صورة");
+  function openAdmin() {
+    document.getElementById("admin").style.display = "block";
+  }
 
-  const storageRef = storage.ref('products/' + Date.now() + '_' + file.name);
-  const uploadTask = storageRef.put(file);
-
-  uploadTask.on('state_changed', null,
-    err => alert("خطأ في رفع الصورة: "+err),
-    ()=> {
-      uploadTask.snapshot.ref.getDownloadURL().then(url=>{
-        db.collection('products').add({name,img:url,price}).then(()=>{
-          confetti({particleCount:100,spread:70});
-          document.getElementById('name').value='';
-          document.getElementById('imgFile').value='';
-          document.getElementById('price').value='';
-          loadProductsToSelect();
-        });
-      });
+  function login() {
+    if(document.getElementById("code").value === SECRET){
+      document.getElementById("panel").style.display = "block";
+      showDeleteButtons();
+    } else {
+      alert("الكود غلط");
     }
-  );
-}
+  }
 
-// ====== Update product image ======
-function updateProduct() {
-  const selectedId = document.getElementById('productSelect').value;
-  const file = document.getElementById('imgFile').files[0];
-  if(!selectedId||!file) return alert("اختر المنتج وصورة");
-
-  const storageRef = storage.ref('products/'+Date.now()+'_'+file.name);
-  const uploadTask = storageRef.put(file);
-
-  uploadTask.on('state_changed', null,
-    err=>alert("خطأ في رفع الصورة: "+err),
-    ()=> {
-      uploadTask.snapshot.ref.getDownloadURL().then(url=>{
-        db.collection('products').doc(selectedId).update({img:url}).then(()=>{
-          alert("تم تحديث الصورة!");
-          document.getElementById('imgFile').value='';
-        });
-      });
+  function showDeleteButtons(){
+    if(document.getElementById("code").value === SECRET){
+      document.querySelectorAll('.delete-btn').forEach(btn => btn.style.display = 'block');
     }
-  );
-}
+  }
 
-// ====== Delete selected product ======
-function deleteProductSelected() {
-  const selectedId = document.getElementById('productSelect').value;
-  if(!selectedId) return alert("اختر المنتج لحذفه");
-  db.collection('products').doc(selectedId).delete().then(()=>{
-    alert("تم حذف المنتج!");
-    loadProductsToSelect();
-  });
-}
-</script>
-</body>
+  function addProduct() {
+    const file = document.getElementById("img").files[0];
+    const price = document.getElementById("price").value;
+    if(!file || !price) return alert("اختر صورة واكتب السعر");
+    const reader = new FileReader();
+    reader.onload = () => {
+      products.push({img:reader.result, price});
+      render();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function deleteProduct(index) {
+    if(confirm("متأكد عايز تمسح المنتج؟")){
+      products.splice(index, 1);
+      render();
+    }
+  }
+
+  function createConfetti(){
+    for(let i=0;i<50;i++){
+      let confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.style.left = Math.random()*100+'vw';
+      confetti.style.background = `hsl(${Math.random()*360},100%,50%)`;
+      confetti.style.animationDuration = 2+Math.random()*3+'s';
+      document.body.appendChild(confetti);
+      setTimeout(()=>confetti.remove(),5000);
+    }
+  }
+
+  window.onload = () => {
+    render();
+    createConfetti();
+  }
+</script></body>
 </html>
