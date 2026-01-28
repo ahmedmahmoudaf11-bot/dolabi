@@ -5,17 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>دولابي</title>
 <style>
-body { font-family: Arial; background: #fff68f; margin:0; padding:0; text-align:center; }
-h1 { color: red; margin: 20px 0; animation: slideIn 1s ease; }
+body { font-family: Arial; margin:0; background:#fff200; text-align:center; color:black; }
+h1 { font-size:36px; margin:20px 0; animation: slideIn 1s ease; }
 @keyframes slideIn { from {transform: translateX(-100%);} to {transform: translateX(0);} }
-#address { font-size: 14px; margin-bottom: 10px; }
-#contact { font-size: 16px; margin-bottom: 20px; font-weight:bold; }
-.product { display:inline-block; margin:10px; padding:10px; border:1px solid #ccc; border-radius:10px; width:150px; transition: transform 0.3s; }
-.product:hover { transform: scale(1.1); }
-.product img { width:100%; border-radius:10px; animation: zoomIn 0.5s ease; }
+#address, #contact { font-size:14px; margin:5px 0; }
+.products { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px; padding:20px; }
+.card { background:#fff; padding:10px; border-radius:8px; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.2); }
+.card img { width:100%; border-radius:8px; animation: zoomIn 0.5s ease; }
 @keyframes zoomIn { from {transform: scale(0);} to {transform: scale(1);} }
-#adminPanel { display:none; margin:20px; padding:20px; border:2px dashed #f00; }
-input, button { padding:5px; margin:5px; }
+.price { color:green; font-weight:bold; margin:5px 0 0 0; }
+footer { text-align:center; padding:15px; background:#fff200; margin-top:20px; }
+#adminPanel { display:none; position:fixed; top:10%; left:50%; transform:translateX(-50%); background:#fff; padding:20px; border-radius:10px; box-shadow:0 0 10px #000; z-index:999; width:300px; }
+#adminPanel h3 { margin-top:0; }
+#adminPanel input, #adminPanel select { width:100%; margin-bottom:10px; padding:5px; }
+#adminPanel button { padding:5px 10px; cursor:pointer; margin-right:5px; margin-top:5px; }
 #adminBtn { margin:20px; padding:10px 20px; background:red; color:white; border:none; cursor:pointer; border-radius:5px; }
 </style>
 </head>
@@ -25,16 +28,19 @@ input, button { padding:5px; margin:5px; }
 <div id="address">ديرب نجم بجوار كافيه المشربيه</div>
 <div id="contact">للاستعلام: 01116535376</div>
 
-<div id="products"></div>
+<div class="products" id="products"></div>
 
 <button id="adminBtn" onclick="toggleAdmin()">Admin</button>
 
 <div id="adminPanel">
-  <h2>لوحة الإدارة</h2>
+  <h3>لوحة الإدارة</h3>
   <input type="text" id="name" placeholder="اسم المنتج">
   <input type="file" id="imgFile" accept="image/*">
   <input type="text" id="price" placeholder="السعر">
   <button onclick="addProduct()">إضافة</button>
+  <button onclick="updateProduct()">تعديل الصورة</button>
+  <button onclick="deleteProductSelected()">حذف المنتج</button>
+  <select id="productSelect"></select>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
@@ -58,18 +64,17 @@ const db = firebase.firestore();
 const storage = firebase.storage();
 
 // ====== Render products Realtime ======
-db.collection('products').onSnapshot((snapshot) => {
+db.collection('products').onSnapshot(snapshot => {
   const container = document.getElementById('products');
   container.innerHTML = '';
   snapshot.forEach(doc => {
     const p = doc.data();
     const div = document.createElement('div');
-    div.className = 'product';
+    div.className = 'card';
     div.innerHTML = `
       <img src="${p.img}" alt="${p.name}">
       <p>${p.name}</p>
-      <p>السعر: ${p.price}</p>
-      <button onclick="deleteProduct('${doc.id}')">حذف</button>
+      <p class="price">${p.price}</p>
     `;
     container.appendChild(div);
   });
@@ -78,46 +83,84 @@ db.collection('products').onSnapshot((snapshot) => {
 // ====== Admin panel ======
 function toggleAdmin() {
   const pass = prompt("ادخل كلمة السر للادمن:");
-  if(pass === "dolabi123") {
+  if(pass === "A1212A") {
     const panel = document.getElementById('adminPanel');
-    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-  } else {
-    alert("كلمة السر غلط!");
-  }
+    panel.style.display = panel.style.display==='none'?'block':'none';
+    loadProductsToSelect();
+  } else alert("كلمة السر غلط!");
 }
 
-// ====== Add product مع رفع الصورة من الجهاز ======
+// ====== Load products to select ======
+function loadProductsToSelect() {
+  const select = document.getElementById('productSelect');
+  select.innerHTML = '';
+  db.collection('products').get().then(snapshot=>{
+    snapshot.forEach(doc=>{
+      const opt = document.createElement('option');
+      opt.value = doc.id;
+      opt.text = doc.data().name;
+      select.appendChild(opt);
+    });
+  });
+}
+
+// ====== Add product ======
 function addProduct() {
   const name = document.getElementById('name').value;
   const file = document.getElementById('imgFile').files[0];
   const price = document.getElementById('price').value;
-
-  if(!name || !file || !price) return alert("املأ كل الحقول واختر صورة");
+  if(!name||!file||!price) return alert("املأ كل الحقول واختر صورة");
 
   const storageRef = storage.ref('products/' + Date.now() + '_' + file.name);
   const uploadTask = storageRef.put(file);
 
-  uploadTask.on('state_changed', 
-    null,
-    (error) => { alert("حدث خطأ أثناء رفع الصورة: " + error); },
-    () => {
-      uploadTask.snapshot.ref.getDownloadURL().then((url) => {
-        db.collection('products').add({ name, img: url, price }).then(() => {
-          confetti({ particleCount: 100, spread: 70 });
+  uploadTask.on('state_changed', null,
+    err => alert("خطأ في رفع الصورة: "+err),
+    ()=> {
+      uploadTask.snapshot.ref.getDownloadURL().then(url=>{
+        db.collection('products').add({name,img:url,price}).then(()=>{
+          confetti({particleCount:100,spread:70});
           document.getElementById('name').value='';
           document.getElementById('imgFile').value='';
           document.getElementById('price').value='';
+          loadProductsToSelect();
         });
       });
     }
   );
 }
 
-// ====== Delete product ======
-function deleteProduct(id) {
-  db.collection('products').doc(id).delete();
+// ====== Update product image ======
+function updateProduct() {
+  const selectedId = document.getElementById('productSelect').value;
+  const file = document.getElementById('imgFile').files[0];
+  if(!selectedId||!file) return alert("اختر المنتج وصورة");
+
+  const storageRef = storage.ref('products/'+Date.now()+'_'+file.name);
+  const uploadTask = storageRef.put(file);
+
+  uploadTask.on('state_changed', null,
+    err=>alert("خطأ في رفع الصورة: "+err),
+    ()=> {
+      uploadTask.snapshot.ref.getDownloadURL().then(url=>{
+        db.collection('products').doc(selectedId).update({img:url}).then(()=>{
+          alert("تم تحديث الصورة!");
+          document.getElementById('imgFile').value='';
+        });
+      });
+    }
+  );
+}
+
+// ====== Delete selected product ======
+function deleteProductSelected() {
+  const selectedId = document.getElementById('productSelect').value;
+  if(!selectedId) return alert("اختر المنتج لحذفه");
+  db.collection('products').doc(selectedId).delete().then(()=>{
+    alert("تم حذف المنتج!");
+    loadProductsToSelect();
+  });
 }
 </script>
-
 </body>
 </html>
