@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>دولابي</title>
+  <style>
+    body { font-family: Arial; margin:0; background: #fff200; }
+    header { background: #fff200; color: black; padding: 20px; text-align: center; }
+    header img { width: 80px; vertical-align: middle; }
+    header h1 { display: inline-block; margin: 0 0 0 10px; font-size: 36px; color: black; vertical-align: middle; }
+    .products { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px; padding:20px; }
+    .card { background:#fff; padding:10px; border-radius:8px; text-align:center; }
+    .card img { width:100%; border-radius:8px; }
+    .price { color:green; font-weight:bold; }
+    footer { text-align:center; padding:15px; background:#fff200; margin-top:20px; }
+    /* لوحة التحكم */
+    #adminPanel { display:none; position:fixed; top:10%; left:50%; transform:translateX(-50%); background:#fff; padding:20px; border-radius:10px; box-shadow:0 0 10px #000; z-index:999; width:300px; }
+    #adminPanel input { width:100%; margin-bottom:10px; padding:5px; }
+    #adminPanel button { padding:5px 10px; cursor:pointer; }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="images/logo.png" alt="دولابي لوجو">
+  <h1>دولابي</h1>
+  <p>ديرب نجم بجوار كافيه المشربية | للاستعلام: 01116535376</p>
+</header>
+
+<div class="products" id="products">
+  <!-- مثال منتج -->
+  <div class="card" data-id="0">
+    <img src="images/shirt1.jpg" alt="تيشيرت رجالي" id="img0">
+    <h3 id="name0">تيشيرت أسود</h3>
+    <p class="price" id="price0">250 جنيه</p>
+  </div>
+  <div class="card" data-id="1">
+    <img src="images/shirt2.jpg" alt="قميص أبيض" id="img1">
+    <h3 id="name1">قميص أبيض</h3>
+    <p class="price" id="price1">300 جنيه</p>
+  </div>
+  <div class="card" data-id="2">
+    <img src="images/shirt3.jpg" alt="بنطلون جينز" id="img2">
+    <h3 id="name2">بنطلون جينز</h3>
+    <p class="price" id="price2">400 جنيه</p>
+  </div>
+</div>
+
+<footer>
+  © 2026 دولابي
+</footer>
+
+<!-- لوحة التحكم -->
+<div id="adminPanel">
+  <h3>لوحة تحكم Admin</h3>
+  <label>رقم المنتج (0-2):</label>
+  <input type="number" id="prodId" min="0" max="2" placeholder="رقم المنتج">
+  <label>اسم المنتج الجديد:</label>
+  <input type="text" id="newName" placeholder="اسم جديد">
+  <label>السعر الجديد:</label>
+  <input type="text" id="newPrice" placeholder="السعر الجديد">
+  <label>رابط الصورة الجديد (URL):</label>
+  <input type="text" id="newImg" placeholder="رابط الصورة">
+  <button onclick="updateProduct()">تحديث المنتج</button>
+  <button onclick="closeAdmin()">اغلاق</button>
+</div>
+
+<script>
+  // زر Admin مخفي (اضغط 5 مرات على الهيدر)
+  let clickCount = 0;
+  document.querySelector('header').addEventListener('click', function(){
+    clickCount++;
+    if(clickCount === 5){
+      let password = prompt("ادخل الباسورد:");
+      if(password === "A1234A"){
+        document.getElementById('adminPanel').style.display = 'block';
+      } else {
+        alert("كلمة مرور خطأ!");
+      }
+      clickCount = 0;
+    }
+  });
+
+  function updateProduct(){
+    let id = document.getElementById('prodId').value;
+    let name = document.getElementById('newName').value;
+    let price = document.getElementById('newPrice').value;
+    let img = document.getElementById('newImg').value;
+
+    if(id !== "" && id>=0 && id<=2){
+      if(name) document.getElementById('name'+id).innerText = name;
+      if(price) document.getElementById('price'+id).innerText = price;
+      if(img) document.getElementById('img'+id).src = img;
+      alert("تم التحديث!");
+    } else {
+      alert("رقم المنتج غير صحيح!");
+    }
+  }
+
+  function closeAdmin(){
+    document.getElementById('adminPanel').style.display = 'none';
+  }
+</script>
+
+</body>
+</html>
